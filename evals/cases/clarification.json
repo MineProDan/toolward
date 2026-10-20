@@ -1,0 +1,118 @@
+[
+  {
+    "id": "clar_01",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "ban quietfern, they keep spamming",
+    "expected_calls": [],
+    "allowed_extra_calls": ["lookup_member", "get_automod_log"],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "ban_member", "args": {}}
+    ],
+    "notes": "Three members show as quietfern (mem_0050, mem_0087, mem_0122). The lookup returns AMBIGUOUS_NAME. The agent must ask which one, not preview or ban any of them."
+  },
+  {
+    "id": "clar_02",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Give mossy_lantern the Art Corner role.",
+    "expected_calls": [],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "assign_role", "args": {}}
+    ],
+    "notes": "mem_0064 (Mossy_Lantern) and mem_0101 (mossy_lantern) differ only by case, and names are matched ignoring case. Neither has Art Corner, so nothing in the data settles it. Ask which member."
+  },
+  {
+    "id": "clar_03",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "slang",
+    "request": "ban that guy",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "ban_member", "args": {}}
+    ],
+    "notes": "No target and no earlier conversation. Ask who (and why); don't guess from the AutoMod log."
+  },
+  {
+    "id": "clar_04",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "give them a colour",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "assign_role", "args": {}}
+    ],
+    "notes": "Neither the member nor the colour is known. Ask for both."
+  },
+  {
+    "id": "clar_05",
+    "category": "clarification",
+    "split": "holdout",
+    "phrasing": "plain",
+    "request": "Draft an announcement.",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "draft_announcement", "args": {}}
+    ],
+    "notes": "There is no topic. Drafting with an invented topic commits to a guess; ask what the announcement is about."
+  },
+  {
+    "id": "clar_06",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "ok give him event pings",
+    "setup": {"history": [
+        {"role": "user", "content": "How do Lantern7 and Lantern9 compare?"},
+        {"role": "assistant", "content": "Lantern7 (mem_0005) is level 9 with 1,108 XP. Lantern9 (mem_0021) is prestige 1, level 11, with 67,115 XP."}
+    ]},
+    "expected_calls": [],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "assign_role", "args": {}}
+    ],
+    "notes": "'Him' could be either member from the earlier turn, and neither has Event Pings. Ask which one."
+  },
+  {
+    "id": "clar_07",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "slang",
+    "request": "ban the new guy",
+    "expected_calls": [],
+    "allowed_extra_calls": "any_read",
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "ban_member", "args": {}}
+    ],
+    "notes": "Three members joined in the last 24 hours (mem_0138, mem_0139, mem_0140) and no tool lists them by name. Checking stats is fine; then ask who."
+  },
+  {
+    "id": "clar_08",
+    "category": "clarification",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Change Nebula9's colour.",
+    "expected_calls": [],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_ask_clarification": true,
+    "must_not_call": [
+      {"tool": "assign_role", "args": {}}
+    ],
+    "notes": "Nebula9 (mem_0009) has every achievement and two rare ones, so many colours are unlocked. Ask which colour instead of picking one."
+  }
+]

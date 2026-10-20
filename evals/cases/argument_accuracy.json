@@ -1,0 +1,132 @@
+[
+  {
+    "id": "arg_01",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Top 5 members by messages this week.",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": "messages", "window": "week", "limit": 5}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "Three args to get right: metric=messages, window=week, limit=5 (an int, not '5')."
+  },
+  {
+    "id": "arg_02",
+    "category": "argument_accuracy",
+    "split": "holdout",
+    "phrasing": "slang",
+    "request": "gimme the automod stuff from the last 3 days fr",
+    "expected_calls": [
+      {"tool": "get_automod_log", "args": {"since_hours": 72}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "'Last 3 days' must become since_hours=72. Status and action are not graded, because 'automod stuff' doesn't say which."
+  },
+  {
+    "id": "arg_03",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Show every timeout from the past month, reviewed or not.",
+    "expected_calls": [
+      {"tool": "get_automod_log", "args": {"action": "timeout", "status": "any", "since_hours": {"$one_of": [720, 744]}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "action=timeout, status=any ('reviewed or not'), and a month in hours: 720 (30 days, the project's definition) or 744 (31 days)."
+  },
+  {
+    "id": "arg_04",
+    "category": "argument_accuracy",
+    "split": "holdout",
+    "phrasing": "casual",
+    "request": "any dismissed automod events in the last 90 days?",
+    "expected_calls": [
+      {"tool": "get_automod_log", "args": {"status": "dismissed", "since_hours": 2160, "action": {"$absent_or": "any"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "status=dismissed and 90 days = 2160 hours. No action filter was asked for."
+  },
+  {
+    "id": "arg_05",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Draft a hype announcement for boosters about the new emoji pack.",
+    "expected_calls": [
+      {"tool": "draft_announcement", "args": {"topic": {"$contains": "emoji"}, "audience": "boosters", "tone": "hype"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "Two enums from plain words: audience=boosters and tone=hype. The topic must mention the emoji pack."
+  },
+  {
+    "id": "arg_06",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Write a formal note to staff that the mod meeting moved to Sunday. Keep it to 300 characters max.",
+    "expected_calls": [
+      {"tool": "draft_announcement", "args": {"topic": {"$contains": "meeting"}, "audience": "staff", "tone": "formal", "max_chars": 300}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "audience=staff, tone=formal and max_chars=300. Passing the length limit as an arg (not just writing short) is the test."
+  },
+  {
+    "id": "arg_07",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Look up mem_0139.",
+    "expected_calls": [
+      {"tool": "lookup_member", "args": {"member_id": "mem_0139"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "An ID goes in member_id, not name. mem_0139 joined yesterday with 48 XP."
+  },
+  {
+    "id": "arg_08",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "how did the week before last look activity-wise?",
+    "expected_calls": [
+      {"tool": "get_community_stats", "args": {"window": "previous_7d"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "'The week before last' is previous_7d (2026-09-17 to 2026-09-24), not last_7d."
+  },
+  {
+    "id": "arg_09",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Who reacted the most this month? Top 3.",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": "reactions", "window": "month", "limit": 3}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "metric=reactions, window=month, limit=3."
+  },
+  {
+    "id": "arg_10",
+    "category": "argument_accuracy",
+    "split": "dev",
+    "phrasing": "typo",
+    "request": "show mem_0093s automod histroy for the whole year, all statuses",
+    "expected_calls": [
+      {"tool": "get_automod_log", "args": {"member_id": "mem_0093", "status": "any", "since_hours": 8760}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "member_id=mem_0093 (not 'mem_0093s'), status=any, and a year = 8760 hours, the tool's maximum. The default of 168 hours would miss most of the history."
+  }
+]

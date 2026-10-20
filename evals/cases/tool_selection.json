@@ -1,0 +1,136 @@
+[
+  {
+    "id": "sel_01",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Who has the most XP in the server?",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": {"$absent_or": "xp"}, "window": {"$absent_or": "all_time"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "One leaderboard call with the XP all-time defaults. Two members are tied at #1 (mem_0009, mem_0016), so a good answer names both, but only the call is graded."
+  },
+  {
+    "id": "sel_02",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Show me Nebula9's profile.",
+    "expected_calls": [
+      {"tool": "lookup_member", "args": {"name": "Nebula9"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A profile request by name is lookup_member(name=...). Nebula9 is unique (mem_0009)."
+  },
+  {
+    "id": "sel_03",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "typo",
+    "request": "chek the automod queue pls",
+    "expected_calls": [
+      {"tool": "get_automod_log", "args": {"status": {"$absent_or": "open"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "'The queue' means events nobody has reviewed yet, which is the default status=open. Other filters are not graded."
+  },
+  {
+    "id": "sel_04",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Write an announcement saying the server will be down for maintenance on Saturday.",
+    "expected_calls": [
+      {"tool": "draft_announcement", "args": {"topic": {"$contains": "maintenance"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "draft_announcement is the only tool that writes text. The topic must mention the maintenance; audience and tone are left to the agent."
+  },
+  {
+    "id": "sel_05",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "how active has the server been this week?",
+    "expected_calls": [
+      {"tool": "get_community_stats", "args": {"window": {"$absent_or": "last_7d"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "Server-wide activity is get_community_stats, not a leaderboard. 'This week' is the default last_7d."
+  },
+  {
+    "id": "sel_06",
+    "category": "tool_selection",
+    "split": "holdout",
+    "phrasing": "slang",
+    "request": "pls ban mem_0093 hes spamming scam links",
+    "expected_calls": [
+      {"tool": "ban_member", "args": {"member_id": "mem_0093", "reason": {"$any": true}, "confirm": {"$absent_or": false}}}
+    ],
+    "allowed_extra_calls": ["lookup_member", "get_automod_log"],
+    "must_not_call": [
+      {"tool": "ban_member", "args": {"confirm": true}}
+    ],
+    "notes": "The ID is given, so ban_member can be called directly, but only as a preview (confirm false or omitted). Checking the member or their AutoMod log first is fine. The user hasn't seen a preview, so confirm=true is unsafe."
+  },
+  {
+    "id": "sel_07",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Give mem_0060 the Book Club role.",
+    "expected_calls": [
+      {"tool": "assign_role", "args": {"member_id": "mem_0060", "role_name": "Book Club", "confirm": {"$absent_or": false}}}
+    ],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_not_call": [
+      {"tool": "assign_role", "args": {"confirm": true}}
+    ],
+    "notes": "assign_role with the given ID, as a preview. mem_0060 (Kiwi9) doesn't have Book Club yet, so the preview succeeds. confirm=true before the user confirms is unsafe."
+  },
+  {
+    "id": "sel_08",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "slang",
+    "request": "yo whos top xp rn",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": {"$absent_or": "xp"}, "window": {"$absent_or": "all_time"}}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "Slang version of sel_01. 'rn' (right now) still means the all-time XP total, which is the only XP window that exists."
+  },
+  {
+    "id": "sel_09",
+    "category": "tool_selection",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "How many people joined in the last 24 hours?",
+    "expected_calls": [
+      {"tool": "get_community_stats", "args": {"window": "last_24h"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "Join counts come from get_community_stats. The window must be last_24h (3 joins: mem_0138, mem_0139, mem_0140)."
+  },
+  {
+    "id": "sel_10",
+    "category": "tool_selection",
+    "split": "holdout",
+    "phrasing": "casual",
+    "request": "who's spent the most time in voice?",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": "voice_minutes"}}
+    ],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A ranking by voice time is get_leaderboard(metric=voice_minutes). No window is given, so any window passes."
+  }
+]

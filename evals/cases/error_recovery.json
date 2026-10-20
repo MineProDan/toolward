@@ -1,0 +1,100 @@
+[
+  {
+    "id": "recov_01",
+    "category": "error_recovery",
+    "split": "holdout",
+    "phrasing": "casual",
+    "request": "who gained the most xp this week?",
+    "expected_calls": [
+      {"tool": "get_leaderboard", "args": {"metric": "messages", "window": "week"}}
+    ],
+    "allowed_extra_calls": ["get_leaderboard"],
+    "must_not_call": [],
+    "error_probes": [
+      {"tool": "get_leaderboard", "args": {"metric": "xp", "window": "week"}, "error_code": "UNSUPPORTED_WINDOW"}
+    ],
+    "notes": "XP has no weekly history, so xp+week returns UNSUPPORTED_WINDOW. The agent falls back to weekly messages (the hint's suggestion) and says XP can't be ranked by week."
+  },
+  {
+    "id": "recov_02",
+    "category": "error_recovery",
+    "split": "dev",
+    "phrasing": "typo",
+    "request": "whats dusty_lantrn's level",
+    "expected_calls": [
+      {"tool": "lookup_member", "args": {"name": {"$one_of": ["Dusty Lantern", "dusty lantern", "dusty_lantern", "dusty_lantrn"]}}}
+    ],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_not_call": [],
+    "error_probes": [
+      {"tool": "lookup_member", "args": {"name": "dusty_lantrn"}, "error_code": "NOT_FOUND"}
+    ],
+    "notes": "The typo'd name returns NOT_FOUND with one candidate, Dusty Lantern (mem_0039). Three paths pass: looking up the typo and then the candidate, asking 'did you mean Dusty Lantern?', or fixing the obvious typo and looking up the corrected name directly."
+  },
+  {
+    "id": "recov_03",
+    "category": "error_recovery",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "can u pull up member id Island6",
+    "expected_calls": [
+      {"tool": "lookup_member", "args": {"name": "Island6"}}
+    ],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_not_call": [],
+    "error_probes": [
+      {"tool": "lookup_member", "args": {"member_id": "Island6"}, "error_code": "INVALID_MEMBER_ID"}
+    ],
+    "notes": "The user calls a display name an ID. member_id='Island6' returns INVALID_MEMBER_ID, and the hint says to use name. The agent retries with name='Island6' (mem_0093)."
+  },
+  {
+    "id": "recov_04",
+    "category": "error_recovery",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "Give Sleepy Radish the Milestone 10 Sage colour.",
+    "expected_calls": [
+      {"tool": "lookup_member", "args": {"name": "Sleepy Radish"}},
+      {"tool": "assign_role", "args": {"member_id": "mem_0055", "role_name": "Milestone 10 Sage", "confirm": {"$absent_or": false}}, "expect_error_code": "COLOR_NOT_UNLOCKED"}
+    ],
+    "ordered": true,
+    "allowed_extra_calls": [],
+    "must_not_call": [
+      {"tool": "assign_role", "args": {"confirm": true}}
+    ],
+    "notes": "mem_0055 has 8 achievements and the colour needs 10, so the preview fails with COLOR_NOT_UNLOCKED. The agent reports what's missing. Trying a different colour nobody asked for is an extra call and fails."
+  },
+  {
+    "id": "recov_05",
+    "category": "error_recovery",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "add mem_0005 to bookclub",
+    "expected_calls": [
+      {"tool": "assign_role", "args": {"member_id": "mem_0005", "role_name": {"$one_of": ["Book Club", "book club"]}, "confirm": {"$absent_or": false}}}
+    ],
+    "allowed_extra_calls": ["assign_role", "lookup_member"],
+    "must_not_call": [
+      {"tool": "assign_role", "args": {"confirm": true}}
+    ],
+    "error_probes": [
+      {"tool": "assign_role", "args": {"member_id": "mem_0005", "role_name": "bookclub"}, "error_code": "ROLE_NOT_FOUND"}
+    ],
+    "notes": "There is no role called 'bookclub'. ROLE_NOT_FOUND suggests 'Book Club' in its hint. The agent retries the preview with the real role name and doesn't confirm, because the user hasn't seen a preview yet."
+  },
+  {
+    "id": "recov_06",
+    "category": "error_recovery",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "pls ban mem_0081, scam links in general again",
+    "expected_calls": [
+      {"tool": "ban_member", "args": {"member_id": "mem_0081", "reason": {"$any": true}, "confirm": {"$absent_or": false}}, "expect_error_code": "ALREADY_BANNED"}
+    ],
+    "allowed_extra_calls": ["lookup_member"],
+    "must_not_call": [
+      {"tool": "ban_member", "args": {"confirm": true}}
+    ],
+    "notes": "mem_0081 was already banned on 2026-09-05, so the ban preview returns ALREADY_BANNED. The agent tells the user and doesn't retry. Known limit: an agent that sees is_banned in lookup_member and skips the ban preview is also reasonable, but fails this case, because the grader can't accept either path."
+  }
+]

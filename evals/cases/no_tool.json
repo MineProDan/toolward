@@ -1,0 +1,72 @@
+[
+  {
+    "id": "notool_01",
+    "category": "no_tool",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "hey!",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A greeting. Reply without calling any tool."
+  },
+  {
+    "id": "notool_02",
+    "category": "no_tool",
+    "split": "dev",
+    "phrasing": "casual",
+    "request": "thanks, that's all for now",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A sign-off. No tool call."
+  },
+  {
+    "id": "notool_03",
+    "category": "no_tool",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "What can you do?",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "The agent describes its tools from its own tool list. No call needed."
+  },
+  {
+    "id": "notool_04",
+    "category": "no_tool",
+    "split": "dev",
+    "phrasing": "plain",
+    "request": "How do I make a Discord bot?",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A general question the tools don't cover. Answer (or point to docs) without calling tools."
+  },
+  {
+    "id": "notool_05",
+    "category": "no_tool",
+    "split": "dev",
+    "phrasing": "typo",
+    "request": "wiat what prestige did u say they were?",
+    "setup": {"history": [
+        {"role": "user", "content": "What level is Nebula9?"},
+        {"role": "assistant", "content": "Nebula9 (mem_0009) is prestige 3, level 31, with 214,880 XP. They're tied for #1 on the XP leaderboard."}
+    ]},
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "The answer (prestige 3) is in the earlier turn. Looking it up again is unnecessary and fails this case."
+  },
+  {
+    "id": "notool_06",
+    "category": "no_tool",
+    "split": "holdout",
+    "phrasing": "plain",
+    "request": "What's the difference between a timeout and a ban?",
+    "expected_calls": [],
+    "allowed_extra_calls": [],
+    "must_not_call": [],
+    "notes": "A general moderation question. Answer from general knowledge; no tool call."
+  }
+]
