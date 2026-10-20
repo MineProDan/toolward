@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets and local-only files (never commit)
+.env
+.env.*
+*.pem
+*.key
+
+# Local denylist of real identifiers for the privacy scan (Daniel supplies it; stays private)
+privacy_denylist.txt
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+
+# Local assistant instructions (kept out of the public repo)
+CLAUDE.md
