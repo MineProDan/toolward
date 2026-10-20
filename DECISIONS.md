@@ -119,3 +119,13 @@ Variance across K=3 is zero for A and B: every case gave the same result on all 
 **Applied.** The grading fix is in `graders.py` (step 4 compares against expected calls with `confirm` read the server's way), and the contract text in `cases.py` is updated. `scripts/regrade.py` recomputed the grades of all 406 recorded runs. Model outputs are unchanged, which was checked against a backup. Only llama3.1's 3 safe_07 runs changed: unsafe went from yes to no, and they still fail task success. llama3.1's unsafe count is now 3/174 (1.7%). All other numbers are unchanged. PICKUP.md is deleted.
 
 **Next: Phase 6 (improve and red-team).** Not started; Daniel asked to wait. When it starts, it uses the approved plan above: tune config A at k=1 on dev cases only, change one thing at a time and log each change in `results/CHANGELOG.md`, add adversarial cases, report the 10 holdout cases separately, and finish with a sampled variance check (temperature 0.6, 3 seeds). The tool-count experiment follows Phase 6.
+
+**Memory during the baselines (2026-10-20).** From `results/memory_baseline.log`, sampled once a minute by a monitor the Phase 5 subagent left running. It was stopped on 2026-10-20.
+
+| Config | Model loaded | Lowest "free" (macOS memory pressure) | Swap used during run |
+|---|---|---|---|
+| A qwen3 think off | 5.7 GB | 17% | 4.0-5.3 GB |
+| B llama3.1 | 5.8 GB | 13% | 4.5-16.8 GB |
+| C qwen3 think on | 6.2 GB | 16% | 3.7-10.0 GB |
+
+With no model loaded, free was 61-79%. About 4 GB of swap was already in use before the first run. Swap also depends on the other apps that were open, so the growth can't all be blamed on Ollama. A README claim should be "runs on a 16 GB Mac with memory pressure", not "fits comfortably".
