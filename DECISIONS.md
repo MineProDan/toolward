@@ -28,7 +28,7 @@ This test was too easy to tell the models apart. llama3.1 showed soft failures t
 
 ## Gate 1: Octavious recon (2026-10-19)
 
-**Source.** Daniel chose `octavious-oss`, the public sanitized release, over the private repo. The private repo has a `.env` file and a `backups/` folder; neither was opened. Recon was read-only and recorded schema shapes only. The report scan found no IDs, emails or URLs.
+**Source.** Daniel chose `octavious-oss`, the public sanitized release, for the recon. Recon was read-only and recorded schema shapes only. The report scan found no IDs, emails or URLs.
 
 **Findings that change the draft tool list:**
 - XP is stored only as an all-time total. A weekly or monthly XP leaderboard can't be computed. Hourly activity stats (messages, voice, reactions per member) are kept for 400 days.
