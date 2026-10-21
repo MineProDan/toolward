@@ -168,3 +168,28 @@ Variance check (qwen3, temperature 0.6, seeds 42/43/44, 58 cases): V1 mean 64.4%
 **Result.** Task success was 19/26 with 3 tools, 18/26 with 5 and 19/26 with 7. The only difference is sel_03, the case that also flipped on unrelated text changes in Phase 6. The model never called an unneeded tool, and there were 0 unsafe actions. The prompt grew from 2,470 to 3,503 tokens. The 7-tool run matches the Phase 6 final run case for case, which also confirms reproducibility at temperature 0.
 
 **Read.** At this scale (3 to 7 tools that are clearly different from each other, 26 cases, one run), qwen3:8b showed **no measurable degradation** from extra tools. That doesn't show that tool count never matters: 7 is a small tool list, and the distractors don't look like the core tools. A stronger test would use 15-30 tools, or near-duplicate tools (e.g. `get_member` vs `lookup_member`), sampled at temperature 0.6 over several seeds. Listed as future work; not approved or run.
+
+## Gate 7: Release prep (2026-10-20)
+
+**Built (uncommitted).**
+- README rewrite: architecture diagram, a generated results block, findings, grading, tools, reproduce, limitations and future work.
+- `scripts/update_readme_results.py` plus `tests/test_readme.py`: the README's results block is generated from the committed results files, and the test fails if it drifts.
+- CONTRIBUTING and pyproject metadata.
+- `.github/workflows/ci.yml`: lint, format, offline tests and the tree privacy scan. No secrets, GPU or Ollama. `actions/checkout@v7` and `astral-sh/setup-uv@v10.3.0`, both checked to exist.
+- `scripts/scan_history.py`, a `local_path` privacy rule, and `scripts/reproduce.sh`.
+- Local drafts in git-ignored `release_drafts/`.
+
+**Checks.**
+- 668 tests pass offline. The subagent ran them in a sandbox with no network access and no Ollama.
+- ruff is clean, the tree scan is clean, and the README block is up to date.
+- The README's hand-written numbers were traced to the results files. Finding 3 (the copied `mem_0042` gave Helper to a different, existing member) and finding 5 (which adversarial cases executed in V1 vs final) were rechecked against the traces.
+- History scan: 8 commits and 171 file versions, with no IDs, emails, tokens or local paths. The 2 findings are an ignore line for a local instructions file in `.gitignore` (commits 0cfd3f7 and db46815). That file itself was never committed, and all commit emails are the GitHub noreply address.
+- PyPI: `toolward` returned 404 (unclaimed) on 2026-10-20. Nothing was registered.
+
+**Approved by Daniel on 2026-10-20 (all four):**
+1. Move that ignore entry from `.gitignore` to `.git/info/exclude` (local-only), and accept the 2 old commits that mention it. It's an ignore line, not attribution. Alternative: rewrite the unpushed history to remove it. That's safe only before the first push.
+2. Daniel creates `privacy_denylist.txt` (the real server name and usernames) and reruns `scan_for_secrets.py` and `scan_history.py` before pushing.
+3. Daniel fills in his GitHub username in `pyproject.toml` `[project.urls]`.
+4. Commit Phase 7. Daniel then creates the repo, pushes, checks CI, and reviews `release_drafts/` himself.
+
+**Applied.** The ignore entry for the local instructions file moved to `.git/info/exclude`, and the old history is kept as is. Phase 7 is committed. Still Daniel's to do: create the denylist and rerun both scans, fill in the GitHub username, create the repo, push, check CI and review the drafts.

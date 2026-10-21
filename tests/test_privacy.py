@@ -127,3 +127,15 @@ def test_scan_repo_skips_uv_lock_and_binary_files(tmp_path):
     (tmp_path / "uv.lock").write_text("hash = " + "1" * 18 + "\n", encoding="utf-8")
     (tmp_path / "image.bin").write_bytes(b"\0\1\2" + b"1" * 18)
     assert scan_repo(tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    "planted",
+    ["/" + "Users/someone/project/file.py", "C:" + "\\" + "Users" + "\\someone\\file.txt"],
+)
+def test_local_home_paths_are_flagged(planted):
+    assert "local_path" in rules_found("log: " + planted)
+
+
+def test_relative_and_unix_system_paths_are_not_flagged():
+    assert "local_path" not in rules_found("see src/toolward/server/app.py and /usr/bin/env")

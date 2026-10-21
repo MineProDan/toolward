@@ -24,7 +24,7 @@ Definitions: **task success** is the full grading contract in `src/toolward/eval
 | temperature | 0.0 | 0.0 | 0.0 |
 | seed | 42 | 42 | 42 |
 | num_predict (reply cap) | not set | not set | 4096 |
-| Prompt / descriptions | V1 / V1 | V1 / V1 | V1 / V1 |
+| Prompt / descriptions / confirm mode | V1 / V1 / v1 | V1 / V1 / v1 | V1 / V1 / v1 |
 | K x cases | 3 x 58 | 3 x 58 | 1 x 58 |
 | max_turns | 6 | 6 | 6 |
 | Date (UTC) | 2026-10-20T04:10:11Z | 2026-10-20T04:36:10Z | 2026-10-20T08:38:59Z |

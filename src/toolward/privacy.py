@@ -6,6 +6,7 @@ Rules:
 - token rules: Discord bot tokens, GitHub tokens, OpenAI-style keys, AWS access keys,
   Slack tokens and PEM private-key headers
 - high_entropy: long random-looking base64 or hex strings (40+ characters)
+- local_path: an absolute macOS or Windows home-folder path, which leaks a local username
 - denylist: any entry from the local, git-ignored privacy_denylist.txt
 
 Findings never include the full matched text, so the scan output is safe to share.
@@ -36,6 +37,8 @@ PATTERNS: dict[str, re.Pattern[str]] = {
     "aws_access_key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
     "slack_token": re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}"),
     "private_key": re.compile(r"-----BEGIN (?:[A-Z]+ )*PRIVATE KEY-----"),
+    # Written with [r] so this source line doesn't match its own pattern.
+    "local_path": re.compile(r"/Use[r]s/|\b[A-Za-z]:\\Use[r]s\\"),
 }
 
 BASE64_LIKE = re.compile(r"[A-Za-z0-9+/_-]{40,}={0,2}")

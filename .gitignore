@@ -23,8 +23,11 @@ privacy_denylist.txt
 .ruff_cache/
 .DS_Store
 
-# Local assistant instructions (kept out of the public repo)
-CLAUDE.md
-
 # Phase 6 console run logs (local progress output with absolute paths; the data is in results/ and traces/)
 results/phase6_logs/
+
+# Reruns from scripts/reproduce.sh (compared against the committed results, not committed)
+reproduce_runs/
+
+# Local drafts for the release (posts, resume bullets, checklist); never committed
+release_drafts/
