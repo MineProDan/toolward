@@ -193,3 +193,7 @@ Variance check (qwen3, temperature 0.6, seeds 42/43/44, 58 cases): V1 mean 64.4%
 4. Commit Phase 7. Daniel then creates the repo, pushes, checks CI, and reviews `release_drafts/` himself.
 
 **Applied.** The ignore entry for the local instructions file moved to `.git/info/exclude`, and the old history is kept as is. Phase 7 is committed. Still Daniel's to do: create the denylist and rerun both scans, fill in the GitHub username, create the repo, push, check CI and review the drafts.
+
+## Publishing (2026-10-21)
+
+**Decided by Daniel:** the GitHub username is `MineProDan`. Daniel asked for the repo to be created and pushed with `gh` (already signed in as MineProDan), which changes hard rule 5 for this step only. The repo is created **private**. Daniel makes it public himself, after creating `privacy_denylist.txt` and rerunning both scans. PyPI publishing stays Daniel's.
