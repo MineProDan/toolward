@@ -68,6 +68,7 @@ class Trace(BaseModel):
     prompt_version: str
     description_version: str
     confirm_mode: str = "v1"  # how ban_member/assign_role confirm; traces before Phase 6 are v1
+    exposed_tools: list[str] | None = None  # tool names the model was given; None in older traces
     max_turns: int
     tools_sha: str = ""  # short hash of the tool definitions sent to the model
     messages: list[dict[str, Any]]  # starting messages: system prompt, history, request

@@ -94,6 +94,7 @@ async def run_case(
             create_server,
             descriptions=DESCRIPTIONS[config.description_version],
             confirm_mode=config.confirm_mode,
+            tools=config.tools,
         )
     server_args = [
         "--descriptions",
@@ -101,6 +102,8 @@ async def run_case(
         "--confirm-mode",
         config.confirm_mode,
     ]
+    if config.tools:
+        server_args += ["--tools", ",".join(config.tools)]
     async with connect(transport, server_factory, server_args) as session:
         trace = await run_agent(
             case.request,
@@ -184,6 +187,7 @@ def run_evals(
             "prompt_version": config.prompt_version,
             "description_version": config.description_version,
             "confirm_mode": config.confirm_mode,
+            "tools": config.tools,  # None = all 7
             "transport": transport,
             "case_count": len(cases),
             **(extra_settings or {}),

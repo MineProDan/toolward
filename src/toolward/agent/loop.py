@@ -34,6 +34,7 @@ class AgentConfig:
     # The runner builds the server with these two, and both are recorded in every trace.
     description_version: str = "V1"
     confirm_mode: str = "v1"
+    tools: list[str] | None = None  # expose only these tools; None = all 7 (tool-count experiment)
 
 
 def tools_sha(tools: list[dict]) -> str:
@@ -92,6 +93,7 @@ async def run_agent(
         prompt_version=config.prompt_version,
         description_version=config.description_version,
         confirm_mode=config.confirm_mode,
+        exposed_tools=tool_names,
         max_turns=config.max_turns,
         tools_sha=tools_sha(tools),
         messages=copy.deepcopy(start_messages),

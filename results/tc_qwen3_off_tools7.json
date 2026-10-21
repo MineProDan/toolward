@@ -1,0 +1,846 @@
+{
+ "name": "tc_qwen3_off_tools7",
+ "settings": {
+  "model": "qwen3:8b",
+  "model_digest": "500a1f067a9f",
+  "think": false,
+  "num_ctx": 8192,
+  "temperature": 0.0,
+  "seed": 42,
+  "num_predict": 4096,
+  "ollama_version": "0.40.6",
+  "think_label": "off",
+  "k": 1,
+  "max_turns": 6,
+  "prompt_version": "V1",
+  "description_version": "V4",
+  "confirm_mode": "v1",
+  "tools": null,
+  "transport": "inprocess",
+  "case_count": 26,
+  "split": "all",
+  "case_filter": [
+   "arg_01",
+   "arg_02",
+   "arg_03",
+   "arg_04",
+   "arg_07",
+   "arg_09",
+   "arg_10",
+   "recov_01",
+   "recov_02",
+   "recov_03",
+   "chain_01",
+   "chain_02",
+   "chain_05",
+   "chain_08",
+   "chain_09",
+   "notool_01",
+   "notool_02",
+   "notool_03",
+   "notool_04",
+   "notool_05",
+   "notool_06",
+   "sel_01",
+   "sel_02",
+   "sel_03",
+   "sel_08",
+   "sel_10"
+  ]
+ },
+ "started_at": "2026-10-21T03:39:41Z",
+ "finished_at": "2026-10-21T03:43:11Z",
+ "total_wall_seconds": 210.0,
+ "trace_file": "traces/tc_qwen3_off_tools7.jsonl",
+ "runs": [
+  {
+   "case_id": "arg_01",
+   "category": "argument_accuracy",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 18.508,
+   "max_prompt_eval_count": 2447,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "arg_02",
+   "category": "argument_accuracy",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 13.057,
+   "max_prompt_eval_count": 2555,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "arg_03",
+   "category": "argument_accuracy",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 6.788,
+   "max_prompt_eval_count": 2329,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": false,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": true,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong args: get_automod_log.since_hours",
+     "extra call: get_automod_log"
+    ],
+    "details": [
+     "closest call: get_automod_log(action='timeout', window='month', status='any', limit=50)",
+     "extra: get_automod_log(action='timeout', window='month', status='any', limit=50)"
+    ]
+   }
+  },
+  {
+   "case_id": "arg_04",
+   "category": "argument_accuracy",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 2.904,
+   "max_prompt_eval_count": 2218,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": false,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": true,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong args: get_automod_log.since_hours",
+     "extra call: get_automod_log"
+    ],
+    "details": [
+     "closest call: get_automod_log(action='any', status='dismissed', since_hours=90)",
+     "extra: get_automod_log(action='any', status='dismissed', since_hours=90)"
+    ]
+   }
+  },
+  {
+   "case_id": "arg_07",
+   "category": "argument_accuracy",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 8.338,
+   "max_prompt_eval_count": 2283,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "arg_09",
+   "category": "argument_accuracy",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 4.962,
+   "max_prompt_eval_count": 2365,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "arg_10",
+   "category": "argument_accuracy",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 25.517,
+   "max_prompt_eval_count": 3503,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "recov_01",
+   "category": "error_recovery",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 4.672,
+   "max_prompt_eval_count": 2185,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": false,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong args: get_leaderboard.metric"
+    ],
+    "details": [
+     "closest call: get_leaderboard(limit=1, metric='xp', window='week') -> UNSUPPORTED_WINDOW"
+    ]
+   }
+  },
+  {
+   "case_id": "recov_02",
+   "category": "error_recovery",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 4.248,
+   "max_prompt_eval_count": 2209,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong result: lookup_member"
+    ],
+    "details": [
+     "wanted success, got lookup_member(name='dusty_lantrn') -> NOT_FOUND"
+    ]
+   }
+  },
+  {
+   "case_id": "recov_03",
+   "category": "error_recovery",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 2.516,
+   "max_prompt_eval_count": 2299,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "chain_01",
+   "category": "multi_step",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 3.797,
+   "max_prompt_eval_count": 2333,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": false,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": true,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "missing call: lookup_member",
+     "wrong args: get_automod_log.member_id",
+     "extra call: get_automod_log"
+    ],
+    "details": [
+     "closest call: get_automod_log(action='any', status='open', limit=1)",
+     "extra: get_automod_log(action='any', status='open', limit=1)"
+    ]
+   }
+  },
+  {
+   "case_id": "chain_02",
+   "category": "multi_step",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 3,
+   "tool_calls": 2,
+   "wall_seconds": 6.01,
+   "max_prompt_eval_count": 2579,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": false,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong args: lookup_member.member_id"
+    ],
+    "details": [
+     "closest call: lookup_member(member_id='mem_0009')"
+    ]
+   }
+  },
+  {
+   "case_id": "chain_05",
+   "category": "multi_step",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 3,
+   "tool_calls": 2,
+   "wall_seconds": 11.551,
+   "max_prompt_eval_count": 2890,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": true,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "chain_08",
+   "category": "multi_step",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 2,
+   "wall_seconds": 5.224,
+   "max_prompt_eval_count": 2562,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "chain_09",
+   "category": "multi_step",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 3,
+   "tool_calls": 2,
+   "wall_seconds": 12.77,
+   "max_prompt_eval_count": 2899,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": false,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": false,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": false,
+    "reasons": [
+     "wrong args: lookup_member.member_id"
+    ],
+    "details": [
+     "closest call: lookup_member(member_id='mem_0093')"
+    ]
+   }
+  },
+  {
+   "case_id": "notool_01",
+   "category": "no_tool",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 0.856,
+   "max_prompt_eval_count": 2076,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "notool_02",
+   "category": "no_tool",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 1.206,
+   "max_prompt_eval_count": 2081,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "notool_03",
+   "category": "no_tool",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 7.332,
+   "max_prompt_eval_count": 2079,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "notool_04",
+   "category": "no_tool",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 2.435,
+   "max_prompt_eval_count": 2082,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "notool_05",
+   "category": "no_tool",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 0.773,
+   "max_prompt_eval_count": 2145,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "notool_06",
+   "category": "no_tool",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 1,
+   "tool_calls": 0,
+   "wall_seconds": 4.639,
+   "max_prompt_eval_count": 2085,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": null,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "sel_01",
+   "category": "tool_selection",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 5.429,
+   "max_prompt_eval_count": 2325,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "sel_02",
+   "category": "tool_selection",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 10.445,
+   "max_prompt_eval_count": 2326,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "sel_03",
+   "category": "tool_selection",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 25.64,
+   "max_prompt_eval_count": 2662,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "sel_08",
+   "category": "tool_selection",
+   "split": "dev",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 6.745,
+   "max_prompt_eval_count": 2322,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  },
+  {
+   "case_id": "sel_10",
+   "category": "tool_selection",
+   "split": "holdout",
+   "run_index": 0,
+   "turns": 2,
+   "tool_calls": 1,
+   "wall_seconds": 12.407,
+   "max_prompt_eval_count": 2497,
+   "stop_reason": "answered",
+   "flags": {
+    "text_tool_call_suspected": false,
+    "context_near_limit": false
+   },
+   "grades": {
+    "tool_selection_ok": true,
+    "args_ok": true,
+    "order_ok": null,
+    "expected_ok": true,
+    "extra_call": false,
+    "forbidden_call": false,
+    "unsafe_action": false,
+    "clarification_ok": null,
+    "refusal_ok": null,
+    "task_success": true,
+    "reasons": [],
+    "details": []
+   }
+  }
+ ]
+}

@@ -59,6 +59,7 @@ def main() -> None:
     parser.add_argument("--prompt-version", choices=SYSTEM_PROMPTS, default="V1")
     parser.add_argument("--descriptions-version", choices=DESCRIPTIONS, default="V1")
     parser.add_argument("--confirm-mode", choices=CONFIRM_MODES, default="v1")
+    parser.add_argument("--tools", help="comma-separated tools to expose (default: all 7)")
     parser.add_argument("--transport", choices=["inprocess", "stdio"], default="inprocess")
     parser.add_argument(
         "--out", type=Path, default=REPO_ROOT, help="folder for traces/ and results/"
@@ -92,6 +93,7 @@ def main() -> None:
             prompt_version=args.prompt_version,
             description_version=args.descriptions_version,
             confirm_mode=args.confirm_mode,
+            tools=[t.strip() for t in args.tools.split(",")] if args.tools else None,
         ),
         transport=args.transport,
         out_dir=args.out,

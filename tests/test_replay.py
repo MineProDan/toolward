@@ -38,6 +38,7 @@ def test_replay_gives_the_recorded_grades(config, recorded):
         max_turns=recorded.max_turns,
         prompt_version=recorded.prompt_version,
         description_version=recorded.description_version,
+        tools=recorded.exposed_tools,  # the same tool subset (tool-count experiment traces)
         confirm_mode=recorded.confirm_mode,
     )
     replayed = asyncio.run(run_case(case, recorded.run_index, mock, settings))
