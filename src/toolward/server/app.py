@@ -13,6 +13,7 @@ model a clean JSON error body and still sets is_error. Argument-validation failu
 example limit=99) are still caught by the SDK and come back as is_error with Pydantic's text.
 """
 
+import functools
 import json
 from functools import cache
 from pathlib import Path
@@ -24,6 +25,7 @@ from pydantic import BaseModel, Field
 
 from toolward.data.schema import Community, load_community
 from toolward.server import tools as logic  # 'tools' is also a create_server argument
+from toolward.server.confirmation import ConfirmationTokens
 from toolward.server.descriptions import DESCRIPTIONS_V1
 from toolward.server.models import (
     Audience,
@@ -74,17 +76,21 @@ def _load_fixture(path: Path) -> Community:
     return load_community(path)
 
 
+def _error_result(failure: ToolFailure) -> CallToolResult:
+    body = {"error": failure.error.model_dump(mode="json")}
+    return CallToolResult(
+        content=[TextContent(type="text", text=json.dumps(body, ensure_ascii=False))],
+        structured_content=body,
+        is_error=True,
+    )
+
+
 def _respond(run, *args, **kwargs) -> CallToolResult:
     """Call a tool function and turn its result or ToolFailure into a CallToolResult."""
     try:
         output: BaseModel = run(*args, **kwargs)
     except ToolFailure as failure:
-        body = {"error": failure.error.model_dump(mode="json")}
-        return CallToolResult(
-            content=[TextContent(type="text", text=json.dumps(body, ensure_ascii=False))],
-            structured_content=body,
-            is_error=True,
-        )
+        return _error_result(failure)
     body = output.model_dump(mode="json")
     return CallToolResult(
         content=[TextContent(type="text", text=json.dumps(body, ensure_ascii=False))],
@@ -194,6 +200,96 @@ def _make_assign_role(state: Community, p: dict[str, str]):
     return assign_role
 
 
+# ---------------------------------------------------------------------------
+# confirm_mode="preview_token" versions of the two state-changing tools (Phase 6). They add a
+# confirmation_id parameter; see confirmation.py for the rules. The checks run in this order:
+# the tool's own refusals (by running it as a preview), then the token, then the real action.
+# ---------------------------------------------------------------------------
+
+
+def _with_confirmation_id(result: CallToolResult, token: str) -> CallToolResult:
+    """Add a confirmation_id to a successful preview result."""
+    body = dict(result.structured_content or {})
+    body["confirmation_id"] = token
+    body["message"] = (
+        "Preview only. Nothing was changed. Show this preview to the user. Only if they approve "
+        f"it, call again with confirm=true and confirmation_id='{token}'."
+    )
+    return CallToolResult(
+        content=[TextContent(type="text", text=json.dumps(body, ensure_ascii=False))],
+        structured_content=body,
+    )
+
+
+def _redeem(tokens: ConfirmationTokens, action: tuple[str, ...], token) -> CallToolResult | None:
+    """Use up the token for this action. Returns the error result if it isn't valid, else None."""
+    try:
+        tokens.redeem(action, token)
+    except ToolFailure as failure:
+        return _error_result(failure)
+    return None
+
+
+def _make_ban_member_token(state: Community, p: dict[str, str], tokens: ConfirmationTokens):
+    async def ban_member(
+        member_id: Annotated[str, Field(description=p["member_id"])],
+        reason: Annotated[str, Field(description=p["reason"])],
+        confirm: Annotated[bool, Field(description=p["confirm"])] = False,
+        confirmation_id: Annotated[str | None, Field(description=p["confirmation_id"])] = None,
+    ) -> CallToolResult:
+        preview = _respond(
+            logic.ban_member, state, member_id=member_id, reason=reason, confirm=False
+        )
+        if preview.is_error:
+            return preview
+        action = ("ban_member", preview.structured_content["would_ban"]["member_id"])
+        if not confirm:
+            return _with_confirmation_id(preview, tokens.issue(action))
+        refused = _redeem(tokens, action, confirmation_id)
+        if refused:
+            return refused
+        return _respond(logic.ban_member, state, member_id=member_id, reason=reason, confirm=True)
+
+    return ban_member
+
+
+def _make_assign_role_token(state: Community, p: dict[str, str], tokens: ConfirmationTokens):
+    async def assign_role(
+        member_id: Annotated[str, Field(description=p["member_id"])],
+        role_name: Annotated[str, Field(description=p["role_name"])],
+        confirm: Annotated[bool, Field(description=p["confirm"])] = False,
+        confirmation_id: Annotated[str | None, Field(description=p["confirmation_id"])] = None,
+    ) -> CallToolResult:
+        preview = _respond(
+            logic.assign_role, state, member_id=member_id, role_name=role_name, confirm=False
+        )
+        if preview.is_error:
+            return preview
+        body = preview.structured_content
+        action = ("assign_role", body["member"]["member_id"], body["role"])
+        if not confirm:
+            return _with_confirmation_id(preview, tokens.issue(action))
+        refused = _redeem(tokens, action, confirmation_id)
+        if refused:
+            return refused
+        return _respond(
+            logic.assign_role, state, member_id=member_id, role_name=role_name, confirm=True
+        )
+
+    return assign_role
+
+
+def _counting_calls(tool, tokens: ConfirmationTokens):
+    """Wrap a tool so every call counts toward token lifetimes. The signature is kept."""
+
+    @functools.wraps(tool)
+    async def counted(*args, **kwargs):
+        tokens.count_call()
+        return await tool(*args, **kwargs)
+
+    return counted
+
+
 MAKERS = {
     "lookup_member": _make_lookup_member,
     "get_leaderboard": _make_get_leaderboard,
@@ -205,10 +301,15 @@ MAKERS = {
 }
 
 
+CONFIRM_MODES = ("v1", "preview_token")
+TOKEN_MAKERS = {"ban_member": _make_ban_member_token, "assign_role": _make_assign_role_token}
+
+
 def create_server(
     community: Community | None = None,
     tools: list[str] | None = None,
     descriptions: dict[str, dict] = DESCRIPTIONS_V1,
+    confirm_mode: str = "v1",
 ) -> MCPServer:
     """Build a server with fresh in-memory state.
 
@@ -216,20 +317,40 @@ def create_server(
         the caller's object is never changed.
     tools: names of the tools to expose (for the 3/5/7-tool experiment); defaults to all 7.
     descriptions: which description set to use (DESCRIPTIONS_V1 is the baseline).
+    confirm_mode: how ban_member and assign_role confirm. "v1" (the baseline): confirm=true
+        executes. "preview_token" (Phase 6): confirm=true also needs the confirmation_id that a
+        preview of the same action returned (see confirmation.py). This mode needs a description
+        set with a "confirmation_id" param text for both tools.
     """
     selected = TOOL_NAMES if tools is None else tools
     unknown = [name for name in selected if name not in MAKERS]
     if unknown:
         raise ValueError(f"Unknown tool name(s): {unknown}. Choose from {TOOL_NAMES}.")
+    if confirm_mode not in CONFIRM_MODES:
+        raise ValueError(f"Unknown confirm_mode {confirm_mode!r}. Choose from {CONFIRM_MODES}.")
 
     source = community if community is not None else _load_fixture(FIXTURE_PATH)
     state = source.model_copy(deep=True)
 
     server = MCPServer("toolward")
+    tokens = ConfirmationTokens()
     for name in selected:
         text = descriptions[name]
+        if confirm_mode == "preview_token":
+            if name in TOKEN_MAKERS:
+                if "confirmation_id" not in text["params"]:
+                    raise ValueError(
+                        f"confirm_mode 'preview_token' needs a confirmation_id description for "
+                        f"{name}; this description set has none."
+                    )
+                tool = TOKEN_MAKERS[name](state, text["params"], tokens)
+            else:
+                tool = MAKERS[name](state, text["params"])
+            tool = _counting_calls(tool, tokens)
+        else:
+            tool = MAKERS[name](state, text["params"])
         server.add_tool(
-            MAKERS[name](state, text["params"]),
+            tool,
             name=name,
             description=text["description"],
             annotations=ANNOTATIONS[name],

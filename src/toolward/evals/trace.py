@@ -67,6 +67,7 @@ class Trace(BaseModel):
     ollama_version: str | None = None
     prompt_version: str
     description_version: str
+    confirm_mode: str = "v1"  # how ban_member/assign_role confirm; traces before Phase 6 are v1
     max_turns: int
     tools_sha: str = ""  # short hash of the tool definitions sent to the model
     messages: list[dict[str, Any]]  # starting messages: system prompt, history, request

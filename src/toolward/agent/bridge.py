@@ -21,12 +21,18 @@ from toolward.server import create_server
 
 @asynccontextmanager
 async def connect(
-    transport: str = "inprocess", server_factory: Callable = create_server
+    transport: str = "inprocess",
+    server_factory: Callable = create_server,
+    server_args: list[str] | None = None,
 ) -> AsyncIterator[Client]:
+    """server_factory builds the in-process server; server_args are extra command-line options
+    for the stdio subprocess (like ["--descriptions", "V2"])."""
     if transport == "inprocess":
         target: Any = server_factory()
     elif transport == "stdio":
-        target = StdioServerParameters(command=sys.executable, args=["-m", "toolward.server"])
+        target = StdioServerParameters(
+            command=sys.executable, args=["-m", "toolward.server", *(server_args or [])]
+        )
     else:
         raise ValueError(f"unknown transport {transport!r}; use 'inprocess' or 'stdio'")
     async with Client(target) as client:

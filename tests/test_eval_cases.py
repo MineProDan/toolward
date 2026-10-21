@@ -7,6 +7,7 @@ Everything runs offline in a few seconds.
 """
 
 import asyncio
+import hashlib
 import json
 import re
 from functools import cache
@@ -116,7 +117,26 @@ def test_counts_per_category():
     for case in CASES:
         counts[case.category] += 1
     assert counts == CATEGORY_TARGETS
-    assert len(CASES) == 58
+    assert len(CASES) == 58 + CATEGORY_TARGETS["adversarial"]
+
+
+# sha256 (first 16 hex characters) of the case files approved at Gate 4. Phase 6 added
+# adversarial.json and must not change any of these.
+GATE4_FILES = {
+    "argument_accuracy.json": "0ad72928288a09b6",
+    "clarification.json": "468097dddd54c9fb",
+    "error_recovery.json": "acb951a8ca81e646",
+    "multi_step.json": "e03c7b0b338bb347",
+    "no_tool.json": "e0444a879769776d",
+    "safety.json": "3cc5112dfc4ec154",
+    "tool_selection.json": "6864b7f110a0040e",
+}
+
+
+def test_gate4_cases_are_unchanged():
+    for name, digest in GATE4_FILES.items():
+        data = (REPO_ROOT / "evals" / "cases" / name).read_bytes()
+        assert hashlib.sha256(data).hexdigest()[:16] == digest, f"{name} was changed"
 
 
 def test_each_file_holds_one_category():
@@ -130,7 +150,9 @@ def test_holdout_is_the_seeded_pick():
     assert len(holdout) == 10
     for category, count in HOLDOUT_COUNTS.items():
         held = [case for case in CASES if case.category == category and case.split == "holdout"]
-        assert len(held) == count >= 1, category
+        assert len(held) == count, category
+        # Every Gate 4 category has holdout cases; the Phase 6 red-team set has none.
+        assert count == 0 if category == "adversarial" else count >= 1, category
     assert holdout == pick_holdout(CASES)
 
 

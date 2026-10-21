@@ -158,8 +158,11 @@ def environment_table(results: list[dict[str, Any]]) -> str:
         ("seed", lambda r, s: str(s["seed"])),
         ("num_predict (reply cap)", lambda r, s: str(s.get("num_predict") or "not set")),
         (
-            "Prompt / descriptions",
-            lambda r, s: f"{s['prompt_version']} / {s['description_version']}",
+            "Prompt / descriptions / confirm mode",
+            lambda r, s: (
+                f"{s['prompt_version']} / {s['description_version']} / "
+                f"{s.get('confirm_mode', 'v1')}"
+            ),
         ),
         ("K x cases", lambda r, s: f"{s['k']} x {s['case_count']}"),
         ("max_turns", lambda r, s: str(s["max_turns"])),

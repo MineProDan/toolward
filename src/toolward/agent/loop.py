@@ -31,7 +31,9 @@ from toolward.evals.trace import (
 class AgentConfig:
     max_turns: int = 6  # model calls per run, at most
     prompt_version: str = "V1"
-    description_version: str = "V1"  # recorded only; the server decides which set it serves
+    # The runner builds the server with these two, and both are recorded in every trace.
+    description_version: str = "V1"
+    confirm_mode: str = "v1"
 
 
 def tools_sha(tools: list[dict]) -> str:
@@ -89,6 +91,7 @@ async def run_agent(
         **model_client.info(),
         prompt_version=config.prompt_version,
         description_version=config.description_version,
+        confirm_mode=config.confirm_mode,
         max_turns=config.max_turns,
         tools_sha=tools_sha(tools),
         messages=copy.deepcopy(start_messages),

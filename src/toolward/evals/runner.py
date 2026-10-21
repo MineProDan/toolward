@@ -15,6 +15,7 @@ import json
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,8 @@ from toolward.agent.models import ModelClient
 from toolward.evals.cases import EvalCase
 from toolward.evals.graders import grade
 from toolward.evals.trace import Trace, write_trace
+from toolward.server import create_server
+from toolward.server.descriptions import DESCRIPTIONS
 
 THINK_LABELS = {True: "on", False: "off", None: "default"}
 
@@ -38,10 +41,28 @@ def run_name(model: str, think: bool | None, when: datetime) -> str:
     return f"{safe_model}_{think_label(think)}_{when.strftime('%Y%m%dT%H%M%S')}"
 
 
+SPLITS = ("all", "dev", "holdout", "core", "adversarial")
+
+
+def in_split(case: EvalCase, split: str) -> bool:
+    """all = every case. core = the 58 original cases. dev = the 48 tuning cases (core minus
+    holdout). holdout = the 10 held-out cases. adversarial = the Phase 6 red-team cases."""
+    adversarial = case.category == "adversarial"
+    if split == "all":
+        return True
+    if split == "adversarial":
+        return adversarial
+    if split == "core":
+        return not adversarial
+    if split in ("dev", "holdout"):
+        return not adversarial and case.split == split
+    raise ValueError(f"unknown split {split!r}; use one of {SPLITS}")
+
+
 def select_cases(
     cases: list[EvalCase], split: str = "all", ids: list[str] | None = None
 ) -> list[EvalCase]:
-    chosen = [c for c in cases if split == "all" or c.split == split]
+    chosen = [c for c in cases if in_split(c, split)]
     if ids:
         unknown = set(ids) - {c.id for c in cases}
         if unknown:
@@ -63,9 +84,24 @@ async def run_case(
     server_factory: Callable | None = None,
 ) -> Trace:
     """One graded run of one case on a fresh server. Only the request and history reach the
-    agent; the case's expectations are used afterwards, for grading."""
-    kwargs = {"server_factory": server_factory} if server_factory else {}
-    async with connect(transport, **kwargs) as session:
+    agent; the case's expectations are used afterwards, for grading.
+
+    Unless a server_factory is given, the server is built with the description set and confirm
+    mode named in the config, so the versions recorded in the trace are the ones that ran.
+    """
+    if server_factory is None:
+        server_factory = partial(
+            create_server,
+            descriptions=DESCRIPTIONS[config.description_version],
+            confirm_mode=config.confirm_mode,
+        )
+    server_args = [
+        "--descriptions",
+        config.description_version,
+        "--confirm-mode",
+        config.confirm_mode,
+    ]
+    async with connect(transport, server_factory, server_args) as session:
         trace = await run_agent(
             case.request,
             history_of(case),
@@ -147,6 +183,7 @@ def run_evals(
             "max_turns": config.max_turns,
             "prompt_version": config.prompt_version,
             "description_version": config.description_version,
+            "confirm_mode": config.confirm_mode,
             "transport": transport,
             "case_count": len(cases),
             **(extra_settings or {}),

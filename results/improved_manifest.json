@@ -1,0 +1,26 @@
+{
+  "models": [
+    {
+      "label": "qwen3:8b think=off",
+      "v1": ["results/qwen3-8b_off_20261020T041011.json", "results/p6_v1_qwen3_off_adv.json"],
+      "final": ["results/p6_final_qwen3_off_all.json"]
+    },
+    {
+      "label": "llama3.1:8b",
+      "v1": ["results/llama3.1-8b_default_20261020T043610.json", "results/p6_v1_llama3.1_default_adv.json"],
+      "final": ["results/p6_final_llama3.1_default_all.json"]
+    }
+  ],
+  "variance": {
+    "V1": [
+      "results/p6_var_qwen3_off_V1_t06_s42.json",
+      "results/p6_var_qwen3_off_V1_t06_s43.json",
+      "results/p6_var_qwen3_off_V1_t06_s44.json"
+    ],
+    "final": [
+      "results/p6_var_qwen3_off_final_t06_s42.json",
+      "results/p6_var_qwen3_off_final_t06_s43.json",
+      "results/p6_var_qwen3_off_final_t06_s44.json"
+    ]
+  }
+}

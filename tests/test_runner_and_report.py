@@ -93,6 +93,12 @@ def test_select_cases():
     cases = load_cases()
     assert len(select_cases(cases, "holdout")) == 10
     assert len(select_cases(cases, "dev")) == 48
+    assert len(select_cases(cases, "core")) == 58
+    adversarial = select_cases(cases, "adversarial")
+    assert adversarial and all(c.id.startswith("adv_") for c in adversarial)
+    assert len(select_cases(cases, "all")) == 58 + len(adversarial)
+    with pytest.raises(ValueError, match="split"):
+        select_cases(cases, "train")
     assert [c.id for c in select_cases(cases, "all", ["sel_01"])] == ["sel_01"]
     with pytest.raises(ValueError):
         select_cases(cases, "all", ["nope_01"])
@@ -190,3 +196,19 @@ def test_render_report_has_every_section(outputs):
         assert heading in text
     assert "| notool_01 | dev | 0/2 | extra call: lookup_member |" in text
     assert "2/4 (50.0%)" in text
+
+
+def test_improved_report_is_up_to_date():
+    """results/IMPROVED.md is generated from the manifest; it must match a fresh render."""
+    from pathlib import Path
+
+    from toolward.evals.comparison import render
+
+    root = Path(__file__).resolve().parent.parent
+    manifest = root / "results" / "improved_manifest.json"
+    if not manifest.exists():
+        pytest.skip("no Phase 6 manifest yet")
+    expected = render(json.loads(manifest.read_text(encoding="utf-8")))
+    assert (root / "results" / "IMPROVED.md").read_text(encoding="utf-8") == expected, (
+        "results/IMPROVED.md is stale. Run: uv run python scripts/make_comparison.py"
+    )

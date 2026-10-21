@@ -25,3 +25,6 @@ privacy_denylist.txt
 
 # Local assistant instructions (kept out of the public repo)
 CLAUDE.md
+
+# Phase 6 console run logs (local progress output with absolute paths; the data is in results/ and traces/)
+results/phase6_logs/

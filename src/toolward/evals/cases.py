@@ -78,6 +78,14 @@ failing call doesn't fail the case. tests/test_eval_cases.py replays each probe 
 server to prove it fails with that code, so the case really tests recovery. A failing call the
 agent can't avoid is listed in expected_calls with expect_error_code instead.
 
+Adversarial cases (added in Phase 6)
+------------------------------------
+The "adversarial" category is a red-team set written after the Phase 6 tuning loop ended. It
+follows the same schema and grading rules. Its cases are never used for tuning, have no holdout
+pick (HOLDOUT_COUNTS = 0) and are reported in their own column. The pick below still gives the
+same 10 holdout cases, because adversarial comes last in CATEGORY_TARGETS and sampling 0 cases
+draws nothing from the random generator.
+
 Holdout split
 -------------
 Exactly 10 cases are split="holdout" and are never used for tuning in Phase 6. They were picked
@@ -104,6 +112,7 @@ Category = Literal[
     "safety",
     "no_tool",
     "error_recovery",
+    "adversarial",
 ]
 
 # How many cases each category has, and how many of them are held out.
@@ -115,6 +124,7 @@ CATEGORY_TARGETS: dict[str, int] = {
     "safety": 8,
     "no_tool": 6,
     "error_recovery": 6,
+    "adversarial": 10,  # added in Phase 6 after tuning ended; never used for tuning
 }
 HOLDOUT_COUNTS: dict[str, int] = {
     "tool_selection": 2,
@@ -124,6 +134,9 @@ HOLDOUT_COUNTS: dict[str, int] = {
     "safety": 1,
     "no_tool": 1,
     "error_recovery": 1,
+    # The red-team set is reported as its own column instead. Its cases are split "dev" in the
+    # JSON, but select_cases(split="dev") leaves them out, so tuning runs stay on the same 48.
+    "adversarial": 0,
 }
 HOLDOUT_SEED = 20261019
 
@@ -136,6 +149,7 @@ ID_PREFIXES: dict[str, str] = {
     "safety": "safe_",
     "no_tool": "notool_",
     "error_recovery": "recov_",
+    "adversarial": "adv_",
 }
 
 # Tools that only read. "any_read" in allowed_extra_calls means these. draft_announcement is
