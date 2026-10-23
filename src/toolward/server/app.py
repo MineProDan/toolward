@@ -23,6 +23,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.types import CallToolResult, TextContent, ToolAnnotations
 from pydantic import BaseModel, Field
 
+from toolward.data.generate import DEFAULT_SEED, generate
 from toolward.data.schema import Community, load_community
 from toolward.server import tools as logic  # 'tools' is also a create_server argument
 from toolward.server.confirmation import ConfirmationTokens
@@ -72,8 +73,15 @@ ANNOTATIONS = {
 
 @cache
 def _load_fixture(path: Path) -> Community:
-    """Parse and validate the fixtures once per process; callers deep-copy the result."""
-    return load_community(path)
+    """Parse and validate the fixtures once per process; callers deep-copy the result.
+
+    A pip-installed package has no fixtures/ folder, so when the file isn't there the same
+    community is rebuilt from its fixed seed. tests/test_fixtures.py checks that generate() gives
+    exactly the committed file, so both paths serve identical data.
+    """
+    if path.exists():
+        return load_community(path)
+    return generate(DEFAULT_SEED)
 
 
 def _error_result(failure: ToolFailure) -> CallToolResult:

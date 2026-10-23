@@ -1,6 +1,6 @@
 [project]
 name = "toolward"
-version = "0.1.0"
+version = "0.1.1"
 description = "An MCP server of community-operations tools, a local-model tool-calling agent (Ollama), and a code-graded eval suite for tool use"
 readme = "README.md"
 license = "MIT"

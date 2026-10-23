@@ -144,6 +144,14 @@ def test_ban_in_one_server_does_not_leak(tmp_path):
     assert hashlib.sha256(FIXTURE_PATH.read_bytes()).hexdigest() == before
 
 
+def test_installed_package_rebuilds_the_same_fixtures(tmp_path):
+    # pip installs have no fixtures/ folder; the server must then serve identical data.
+    from toolward.server.app import _load_fixture
+
+    rebuilt = _load_fixture(tmp_path / "missing" / "community.json")
+    assert rebuilt == _load_fixture(FIXTURE_PATH)
+
+
 def test_passed_in_community_is_not_mutated():
     from toolward.server.app import _load_fixture
 

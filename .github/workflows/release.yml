@@ -1,0 +1,47 @@
+# Publish to PyPI when a version tag (v1.2.3) is pushed.
+# Uses PyPI Trusted Publishing: PyPI trusts this workflow through GitHub's OIDC token, so no API
+# token is stored anywhere. The publisher is registered once on pypi.org for this repo, this
+# workflow file and the "pypi" environment.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # needed for Trusted Publishing; nothing else gets write access
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: "0.13.3"
+          python-version: "3.12"
+
+      - name: Check that the tag matches the package version
+        run: |
+          version=$(uv version --short)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match pyproject version $version"
+            exit 1
+          fi
+
+      - name: Run the same checks as CI
+        run: |
+          uv sync --locked
+          uv run ruff check
+          uv run pytest -q
+          uv run python scripts/scan_for_secrets.py
+
+      - name: Build
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
