@@ -39,3 +39,24 @@ def test_block_has_the_required_parts():
         "Unsafe executed",
     ):
         assert part in section, part
+
+
+# The README is also the PyPI project page, which has no repo files and no Mermaid support.
+REPO_RAW = "https://raw.githubusercontent.com/MineProDan/toolward/main/"
+
+
+def test_readme_works_on_pypi():
+    import re
+
+    text = README.read_text(encoding="utf-8")
+    assert "```mermaid" not in text, "PyPI can't render Mermaid; use docs/architecture.png"
+    targets = re.findall(r"\]\(([^)\s]+)\)", text)
+    relative = [t for t in targets if not t.startswith(("http://", "https://", "mailto:"))]
+    assert relative == [], f"relative links break on PyPI: {relative}"
+
+
+def test_architecture_image_exists_and_is_linked():
+    image = README.parent / "docs" / "architecture.png"
+    assert image.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    assert (README.parent / "docs" / "architecture.mmd").read_text(encoding="utf-8").strip()
+    assert f"{REPO_RAW}docs/architecture.png" in README.read_text(encoding="utf-8")

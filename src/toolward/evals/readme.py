@@ -24,6 +24,8 @@ from toolward.evals.trace import read_traces
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RESULTS_START = "<!-- results:start -->"
 RESULTS_END = "<!-- results:end -->"
+# Absolute links, so they also work on the PyPI project page (which has no repo files).
+REPO_BLOB = "https://github.com/MineProDan/toolward/blob/main/"
 
 MANIFEST = "results/improved_manifest.json"
 # The three Phase 5 baselines, in the column order of results/BASELINE.md.
@@ -194,7 +196,7 @@ def tool_count(paths: dict[int, str]) -> str:
         f"{settings['case_count']} cases that need only the {len(CORE_TOOLS)} core tools): task "
         f"success {'; '.join(cells)}. Calls "
         f"to tools the cases didn't need: {unneeded}. Details: "
-        "[results/TOOL_COUNT.md](results/TOOL_COUNT.md)."
+        f"[results/TOOL_COUNT.md]({REPO_BLOB}results/TOOL_COUNT.md)."
     )
 
 
@@ -214,14 +216,14 @@ def render_section() -> str:
         "date. -->",
         "### Before and after (temperature 0, seed 42, k=1)",
         "Config is prompt / descriptions / confirm mode. Each cell is cases passed out of cases "
-        "run. Full report: [results/IMPROVED.md](results/IMPROVED.md).",
+        f"run. Full report: [results/IMPROVED.md]({REPO_BLOB}results/IMPROVED.md).",
         main_table,
         f"**{headline}**",
         "### Sampled variance check (qwen3:8b think=off, 58 core cases)",
         variance(manifest["variance"]),
         "### V1 baselines, including thinking on (temperature 0)",
         "Fractions are over runs (cases x K). Full report: "
-        "[results/BASELINE.md](results/BASELINE.md).",
+        f"[results/BASELINE.md]({REPO_BLOB}results/BASELINE.md).",
         base_table,
         caveat,
         "### Tool count",

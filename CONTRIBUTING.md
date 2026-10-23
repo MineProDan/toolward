@@ -94,3 +94,5 @@ The V1 prompt (`src/toolward/agent/prompts.py`) and `DESCRIPTIONS_V1` (`src/tool
 ## Results and the README
 
 Reports in `results/*.md` and the README results block are generated; don't edit them by hand. After a new run, regenerate them (the commands are in the README under "Reproduce") and run `uv run python scripts/update_readme_results.py`. Numbers in hand-written docs must match a results file exactly; use `X%` as a placeholder until a measured number exists.
+
+The README is also the PyPI project page, which shows plain Markdown only. So the README uses absolute links (`https://github.com/MineProDan/toolward/blob/main/...`) and shows the architecture as `docs/architecture.png` instead of a Mermaid block; `tests/test_readme.py` enforces both. To change the diagram, edit `docs/architecture.mmd` and run `uv run python scripts/render_diagram.py` (needs network; it sends the synthetic diagram text to mermaid.ink).

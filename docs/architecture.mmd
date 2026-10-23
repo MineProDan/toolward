@@ -1,0 +1,11 @@
+flowchart LR
+    cases["Eval cases<br/>evals/cases/*.json"] --> runner["Eval runner<br/>scripts/run_evals.py"]
+    runner --> agent["Agent loop<br/>toolward.agent"]
+    agent <-->|"chat + tool schemas"| ollama["Ollama<br/>qwen3:8b / llama3.1:8b"]
+    agent <-->|"MCP client<br/>in-process or stdio"| server["MCP server<br/>7 tools"]
+    server --> fixtures["In-memory copy of<br/>synthetic fixtures"]
+    agent --> traces["traces/*.jsonl"]
+    traces --> graders["Graders<br/>deterministic code"]
+    graders --> results["results/*.json"]
+    results --> reports["BASELINE.md, IMPROVED.md,<br/>TOOL_COUNT.md, README results"]
+    mock["Mock model<br/>replays recorded traces"] -.->|"offline tests and CI"| agent

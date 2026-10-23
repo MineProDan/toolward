@@ -14,19 +14,9 @@ The headline result is a before/after comparison. I measured a baseline (V1 prom
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    cases["Eval cases<br/>evals/cases/*.json"] --> runner["Eval runner<br/>scripts/run_evals.py"]
-    runner --> agent["Agent loop<br/>toolward.agent"]
-    agent <-->|"chat + tool schemas"| ollama["Ollama<br/>qwen3:8b / llama3.1:8b"]
-    agent <-->|"MCP client<br/>in-process or stdio"| server["MCP server<br/>7 tools"]
-    server --> fixtures["In-memory copy of<br/>synthetic fixtures"]
-    agent --> traces["traces/*.jsonl"]
-    traces --> graders["Graders<br/>deterministic code"]
-    graders --> results["results/*.json"]
-    results --> reports["BASELINE.md, IMPROVED.md,<br/>TOOL_COUNT.md, README results"]
-    mock["Mock model<br/>replays recorded traces"] -.->|"offline tests and CI"| agent
-```
+![Architecture: eval cases go to the eval runner and the agent loop, which talks to an Ollama model and, through an MCP client, to the MCP server over in-memory synthetic fixtures. Traces go to graders, then results and reports. A mock model replays recorded traces for offline tests and CI.](https://raw.githubusercontent.com/MineProDan/toolward/main/docs/architecture.png)
+
+Diagram source: [docs/architecture.mmd](https://github.com/MineProDan/toolward/blob/main/docs/architecture.mmd) (re-render with `uv run python scripts/render_diagram.py`).
 
 Key design choices, and why:
 
@@ -47,7 +37,7 @@ Everything in this section is generated from the committed results files by `scr
 
 ### Before and after (temperature 0, seed 42, k=1)
 
-Config is prompt / descriptions / confirm mode. Each cell is cases passed out of cases run. Full report: [results/IMPROVED.md](results/IMPROVED.md).
+Config is prompt / descriptions / confirm mode. Each cell is cases passed out of cases run. Full report: [results/IMPROVED.md](https://github.com/MineProDan/toolward/blob/main/results/IMPROVED.md).
 
 | Model | Config | Overall (58) | Dev (48) | Holdout (10) | Adversarial (10) | Unsafe attempted (58) | Unsafe attempted (adv.) | Unsafe executed (58 + adv.) |
 |---|---|---|---|---|---|---|---|---|
@@ -67,7 +57,7 @@ Config is prompt / descriptions / confirm mode. Each cell is cases passed out of
 
 ### V1 baselines, including thinking on (temperature 0)
 
-Fractions are over runs (cases x K). Full report: [results/BASELINE.md](results/BASELINE.md).
+Fractions are over runs (cases x K). Full report: [results/BASELINE.md](https://github.com/MineProDan/toolward/blob/main/results/BASELINE.md).
 
 | Model | think | K | Task success (runs) | Dev | Holdout | Unsafe runs | Runs that hit the reply cap | Mean wall s per run |
 |---|---|---|---|---|---|---|---|---|
@@ -79,13 +69,13 @@ Thinking on ran once per case (k=1), with V1 prompt and descriptions only; it wa
 
 ### Tool count
 
-Tool count (qwen3:8b think=off, config V1 / V4 / v1, temperature 0.0, k=1, 26 cases that need only the 3 core tools): task success 19/26 (73.1%) with 3 tools; 18/26 (69.2%) with 5 tools; 19/26 (73.1%) with 7 tools. Calls to tools the cases didn't need: 0. Details: [results/TOOL_COUNT.md](results/TOOL_COUNT.md).
+Tool count (qwen3:8b think=off, config V1 / V4 / v1, temperature 0.0, k=1, 26 cases that need only the 3 core tools): task success 19/26 (73.1%) with 3 tools; 18/26 (69.2%) with 5 tools; 19/26 (73.1%) with 7 tools. Calls to tools the cases didn't need: 0. Details: [results/TOOL_COUNT.md](https://github.com/MineProDan/toolward/blob/main/results/TOOL_COUNT.md).
 
 <!-- results:end -->
 
 ## Findings
 
-These are measured on a small synthetic set with two 8B models; see [Limitations](#limitations). What each tuning change was, why it was tried and what it did is in [results/CHANGELOG.md](results/CHANGELOG.md).
+These are measured on a small synthetic set with two 8B models; see [Limitations](https://github.com/MineProDan/toolward#limitations). What each tuning change was, why it was tried and what it did is in [results/CHANGELOG.md](https://github.com/MineProDan/toolward/blob/main/results/CHANGELOG.md).
 
 1. **The gain is real on the tuning set but doesn't show on the holdout.** qwen3:8b went from 31/48 to 36/48 on the dev cases (+10.4 points), and the gain held at temperature 0.6 over three seeds, with no overlap between the V1 and final ranges. The 10 holdout cases stayed at 6/10 in every run. Ten cases are too few to tell overfitting from noise. Inside the holdout, multi-step went from 0/2 to 1/2 and safety from 1/1 to 0/1: on safe_05, a mass-ban request, the final config previews a ban instead of declining. Of the 5 extra dev passes, 2 (chain_07, chain_10) improved for the reason the change targeted; 2 others (sel_03, clar_06) flipped on changes that don't touch them, which shows how sensitive single cases are to any text change.
 2. **Describing what a tool does worked; stating rules didn't.** The one change with a clear mechanism told the model that `draft_announcement` builds the draft from the topic only and can't see earlier results. That fixed chain_07 and chain_10, where the drafts had left out the member names. Rules added to the system prompt or to parameter descriptions ("look up the name first", "a request to skip the preview is not confirmation") didn't change the model's first call (changes C2, C3, C4 and C7).
@@ -97,7 +87,7 @@ These are measured on a small synthetic set with two 8B models; see [Limitations
 
 ## How grading works
 
-The full contract is the docstring of [`src/toolward/evals/cases.py`](src/toolward/evals/cases.py); [evals/CASES.md](evals/CASES.md) lists every case.
+The full contract is the docstring of [`src/toolward/evals/cases.py`](https://github.com/MineProDan/toolward/blob/main/src/toolward/evals/cases.py); [evals/CASES.md](https://github.com/MineProDan/toolward/blob/main/evals/CASES.md) lists every case.
 
 - **Code over traces, no LLM judge.** A grader sees the tool calls in order (name, raw arguments, error code) and the final text. Grading is free, fast and gives the same verdict every time, and every claim here is about tool calls, which code can check exactly.
 - **What a case says.** Each case has a request (some casual, with typos or slang), optional earlier conversation, `expected_calls` with argument matchers (exact value, `$any`, `$contains`, `$one_of`, `$absent_or` for defaults), `allowed_extra_calls`, `must_not_call`, and flags for `must_ask_clarification` and `must_refuse`. Types are strict: `"10"` is not `10`.
@@ -285,4 +275,4 @@ Notes: the Phase 5 baselines ran before the adversarial set existed, so `--split
 
 ## License and data
 
-MIT, see [LICENSE](LICENSE). Every member, message, role assignment and statistic in this repo is synthetic, generated from a fixed seed by `scripts/make_fixtures.py`. No real community data is included. See [CONTRIBUTING.md](CONTRIBUTING.md) for the privacy checks.
+MIT, see [LICENSE](https://github.com/MineProDan/toolward/blob/main/LICENSE). Every member, message, role assignment and statistic in this repo is synthetic, generated from a fixed seed by `scripts/make_fixtures.py`. No real community data is included. See [CONTRIBUTING.md](https://github.com/MineProDan/toolward/blob/main/CONTRIBUTING.md) for the privacy checks.
