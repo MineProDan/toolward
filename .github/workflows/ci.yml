@@ -18,7 +18,7 @@ jobs:
       # setup-uv publishes no moving major tag after v7, so this pins a full release tag.
       - uses: astral-sh/setup-uv@v10.3.0
         with:
-          version: "0.13.3"
+          version: "0.13.5"
           python-version: "3.12"
 
       - name: Install dependencies (must match uv.lock)
